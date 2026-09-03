@@ -962,7 +962,7 @@ Install the following:
 # 1. Clone the Repository
 
 ```bash
-git clone <your-github-repository-url>
+git clone https://github.com/ruturajnarhe/Online-Job-Portal-Management-System.git
 ```
 
 Navigate into the project directories.
