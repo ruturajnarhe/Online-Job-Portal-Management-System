@@ -1,0 +1,49 @@
+package com.jsp.ojpms.controller;
+
+import java.util.List;
+
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.jsp.ojpms.entity.JobApplication;
+import com.jsp.ojpms.service.JobAppliactionService;
+
+@RestController
+@RequestMapping("/api/applications")
+public class JobApplicationController {
+	
+	private final JobAppliactionService jobAppliactionService;
+	
+	public JobApplicationController(JobAppliactionService jobAppliactionService) {
+		this.jobAppliactionService = jobAppliactionService;
+	}
+	
+	@PostMapping
+	public JobApplication applyForJob(@RequestBody JobApplication application) {
+		
+		return jobAppliactionService.applyForJob(application);
+	}
+	
+	@GetMapping
+	public List<JobApplication> getAllApplications() {
+		return jobAppliactionService.getAllApplications();
+	}
+	
+	@GetMapping("/{id}")
+	public JobApplication getApplicationById(@PathVariable int id) {
+		return jobAppliactionService.getApplicationById(id);
+	}
+	
+	@DeleteMapping("/{id}")
+	public String deleteApplication(@PathVariable int id) {
+		jobAppliactionService.deleteApplication(id);
+		
+		return "Job Application Deleted Successfully";
+	}
+
+}

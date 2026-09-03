@@ -1,0 +1,106 @@
+package com.jsp.ojpms.service;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import com.jsp.ojpms.entity.Job;
+import com.jsp.ojpms.entity.User;
+import com.jsp.ojpms.exception.InvalidJobException;
+import com.jsp.ojpms.exception.JobNotFoundException;
+import com.jsp.ojpms.exception.UserNotFoundException;
+import com.jsp.ojpms.repository.JobRepository;
+import com.jsp.ojpms.repository.UserRepository;
+
+@Service
+public class JobService {
+
+	private final JobRepository jobRepository;
+	private final UserRepository userRepository;
+
+	public JobService(JobRepository jobRepository, UserRepository userRepository) {
+		this.jobRepository = jobRepository;
+		this.userRepository = userRepository;
+	}
+
+	public Job createJob(Job job) {
+
+		int recruiterId = job.getRecruiter().getId();
+
+		// Find user from database
+		User recruiter = userRepository.findById(recruiterId)
+				.orElseThrow(() -> new UserNotFoundException("Recruiter not found with id: " + recruiterId));
+
+		// Only RECRUITER can create a job
+		if (!"RECRUITER".equalsIgnoreCase(recruiter.getRole())) {
+			throw new InvalidJobException("Only RECRUITER can create a job");
+		}
+
+		LocalDate today = LocalDate.now();
+
+		// Check whether end date is provided
+		if (job.getEndDate() == null) {
+			throw new InvalidJobException("End Date is Required");
+		}
+
+		// End date must be after today's date
+		if (!job.getEndDate().isAfter(today)) {
+			throw new InvalidJobException("End date must be after today's date");
+		}
+
+		// Associate recruiter with job
+		job.setRecruiter(recruiter);
+
+		// Automatically set today's date as the start date
+		job.setStartDate(today);
+
+		// Newly created jobs are always OPEN
+		job.setStatus("OPEN");
+
+		return jobRepository.save(job);
+	}
+
+	public List<Job> getAllJobs() {
+		return jobRepository.findAll();
+	}
+
+	public Job getJobById(int id) {
+		return jobRepository.findById(id).orElseThrow(() -> new JobNotFoundException("Job Not Found with id : " + id));
+	}
+
+	public void deleteJob(int id) {
+
+		Job job = jobRepository.findById(id).orElseThrow(() -> new JobNotFoundException("Job not found with id : " + id));
+
+		jobRepository.delete(job);
+	}
+
+	public Job updateJob(int id, Job job) {
+		Job existingJob = jobRepository.findById(id)
+				.orElseThrow(() -> new JobNotFoundException("Job Not Found with id : " + id));
+
+		existingJob.setTitle(job.getTitle());
+		existingJob.setDescription(job.getDescription());
+		existingJob.setLocation(job.getLocation());
+		existingJob.setSalary(job.getSalary());
+		existingJob.setExperience(job.getExperience());
+		existingJob.setJobType(job.getJobType());
+
+		return jobRepository.save(existingJob);
+
+	}
+
+	public List<Job> searchByTitle(String title) {
+		return jobRepository.findByTitleContainingIgnoreCase(title);
+	}
+
+	public List<Job> searchByLocation(String location) {
+		return jobRepository.findByLocationIgnoreCase(location);
+	}
+
+	public List<Job> searchByJobType(String jobType) {
+		return jobRepository.findByJobTypeIgnoreCase(jobType);
+	}
+
+}

@@ -1,0 +1,31 @@
+package com.jsp.ojpms.controller;
+
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.jsp.ojpms.entity.JobApplication;
+import com.jsp.ojpms.service.JobAppliactionService;
+
+@RestController
+@RequestMapping("/api/applications")
+public class JobApplicationController {
+	
+	private final JobAppliactionService jobAppliactionService;
+	
+	public JobApplicationController(JobAppliactionService jobAppliactionService) {
+		this.jobAppliactionService = jobAppliactionService;
+	}
+	
+	@PostMapping
+	public JobApplication applyForJob(@RequestBody JobApplication application) {
+		
+		System.out.println("Controller Called");
+		
+		return jobAppliactionService.applyForJob(application);
+		
+		System.out.println("Returned Object = " + result);
+	}
+
+}

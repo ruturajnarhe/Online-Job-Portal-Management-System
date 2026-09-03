@@ -1,0 +1,46 @@
+package com.jsp.ojpms.scheduler;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
+import com.jsp.ojpms.entity.Job;
+import com.jsp.ojpms.repository.JobRepository;
+
+@Component
+public class JobScheduler {
+	
+	private final JobRepository jobRepository;
+	
+	public JobScheduler(JobRepository jobRepository) {
+		this.jobRepository = jobRepository;
+	}
+	
+	@Scheduled(fixedRate = 10000)
+	public void closeExpiredJobs() {
+		
+		// Get todays date
+		LocalDate today = LocalDate.now();
+		
+		// Get all jobs from database
+		List<Job> jobs = jobRepository.findAll();
+		
+		// Check every job
+		for(Job job : jobs) {
+			
+			// Check whether job is currently OPEN
+			if("OPEN".equalsIgnoreCase(job.getStatus())) {
+				
+				if(job.getEndDate().isBefore(today)) {
+					job.setStatus("CLOSED");
+				}
+				
+			})
+			
+		}
+		
+	}
+
+}

@@ -1,0 +1,5 @@
+package com.jsp.ojpms.exception;
+
+public class GlobalExceptionHandler {
+
+}

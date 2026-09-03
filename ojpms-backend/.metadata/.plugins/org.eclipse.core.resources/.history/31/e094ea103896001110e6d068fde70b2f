@@ -1,0 +1,69 @@
+package com.jsp.ojpms.controller;
+
+import java.util.List;
+
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.jsp.ojpms.entity.Job;
+import com.jsp.ojpms.service.JobService;
+
+@RestController
+@RequestMapping("/api/jobs")
+public class JobController {
+	
+	private final JobService jobService;
+	
+	public JobController(JobService jobService) {
+		this.jobService = jobService;
+	}
+	
+	@PostMapping
+	public Job createJob(@RequestBody Job job) {
+		return jobService.createJob(job);
+	}
+	
+	@GetMapping
+	public List<Job> getAllJobs() {
+		return jobService.getAllJobs();
+	}
+	
+	@GetMapping("/{id}")
+	public Job getJobById(@PathVariable int id) {
+		return jobService.getJobById(id);
+	}
+	
+	@DeleteMapping("/{id}")
+	public String deleteJob(@PathVariable int id) {
+		jobService.deleteJob(id);
+		return "Job Deleted Successfully";
+	}
+	
+	@PutMapping("/{id}")
+	public Job updateJob(@PathVariable int id, @RequestBody Job job) {
+		return jobService.updateJob(id, job);
+	}
+	
+	@GetMapping("/search/title")
+	public List<Job> searchByTitle(@RequestParam String title) {
+		return jobService.searchByTitle(title);
+	}
+	
+	@GetMapping("/search/location")
+	public List<Job> searchByLocation(@RequestParam String location) {
+		return jobService.searchByLocation(location);
+	}
+	
+	@GetMapping("search/type")
+	public List<Job> searchByJobType(@RequestParam String jobType) {
+		return jobService.searchByJobType(jobType);
+	}
+
+}

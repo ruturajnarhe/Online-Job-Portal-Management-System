@@ -1,0 +1,5 @@
+package com.jsp.ojpms.config;
+
+public class SecurityConfig {
+
+}

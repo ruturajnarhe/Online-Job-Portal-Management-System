@@ -1,0 +1,77 @@
+package com.jsp.ojpms.service;
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import com.jsp.ojpms.entity.Job;
+import com.jsp.ojpms.entity.JobApplication;
+import com.jsp.ojpms.entity.User;
+import com.jsp.ojpms.repository.JobApplicationRepository;
+import com.jsp.ojpms.repository.JobRepository;
+import com.jsp.ojpms.repository.UserRepository;
+
+@Service
+public class JobAppliactionService {
+
+	private final JobApplicationRepository jobApplicationRepository;
+	private final JobRepository jobRepository;
+	private final UserRepository userRepository;
+
+	public JobAppliactionService(JobApplicationRepository jobApplicationRepository, JobRepository jobRepository,
+			UserRepository userRepository) {
+		this.jobApplicationRepository = jobApplicationRepository;
+		this.jobRepository = jobRepository;
+		this.userRepository = userRepository;
+	}
+
+	public JobApplication applyForJob(JobApplication application) {
+
+		// Extract the Job ID from the request body
+		int jobId = application.getJob().getId();
+		// Extract the Applicant(User) ID from the request body
+		int applicantId = application.getApplicant().getId();
+
+//		 System.out.println("====================================");
+//		 System.out.println("Received Job ID       : " + jobId);
+//	     System.out.println("Received Applicant ID : " + applicantId);
+
+		// Fetch the Job from the database
+		Job job = jobRepository.findById(jobId).orElse(null);
+		// Fetch the Applicant from the database
+		User applicant = userRepository.findById(applicantId).orElse(null);
+
+//		  System.out.println("Fetched Job       : " + job);
+//		  System.out.println("Fetched Applicant : " + applicant);
+
+		if (job == null)
+			return null; // Validate whether the Job exists
+		if (applicant == null)
+			return null; // Validate whether the Applicant exists
+
+		application.setJob(job); // Associate the existing Job entity with the application
+		application.setApplicant(applicant); // Associate the existing Applicant entity with the application
+
+		System.out.println("Application Saved Successfully");
+
+		// Save the application into the database
+		return jobApplicationRepository.save(application);
+	}
+	
+	public List<JobApplication> getAllApplications() {
+		return jobApplicationRepository.findAll();
+	}
+	
+	public JobApplication getApplicationById(int id) {
+		return jobApplicationRepository.findById(id).orElse(null);
+	}
+	
+	public void deleteApplication(int id) {
+		jobApplicationRepository.deleteById(id);
+	}
+	
+	public List<JobApplication> getApplicationsByJob(int jobId) {
+		return jobApplicationRepository.findByJobId(jobId);
+	}
+
+}
